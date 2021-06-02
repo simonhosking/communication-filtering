@@ -1,0 +1,689 @@
+\documentclass[aspectratio=43, notes]{beamer}
+\usepackage{hyperref}
+\usepackage{csquotes,lipsum}
+\usepackage{array}
+\usepackage{multirow}
+\renewcommand{\mkblockquote}[4]{#1#2\par\hfill#4#3}
+%\mode<presentation>
+\usetheme{DSTG}
+\usepackage{graphics}
+
+\usepackage{xcolor, colortbl}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, matrix, fit, chains, calc, shapes.geometric, shapes.misc, arrows, decorations.markings}
+
+
+\usepackage{ifthen}
+\usepackage{pgf}
+\usepackage{pgfpages}
+\usepackage[utf8]{inputenc}
+\usepackage{natbib}
+\usepackage{enumitem}
+\usepackage{animate}
+
+\usepackage{standalone}
+%\usepackage{algorithmicx}
+%\usepackage{neuralnetwork}
+%\usepackage[table]{xcolor}
+%\usepackage{pgfplots, siunitx}
+\usepackage[most]{tcolorbox}
+
+\usepackage{pgfplots}
+% (use this `compat` level or higher to make use of the "advanced" axis
+%  label positioning)
+\pgfplotsset{compat=1.3}
+
+% for beamer [handout] option only
+%\pgfpagesuselayout{2 on 1}[a4paper,border shrink=5mm]
+
+% animate code
+%\newcount\myangle
+
+\setbeamertemplate{caption}[numbered]
+	
+
+%% For confusion matrices commands
+\newcommand\MyBox[2]{
+	\fbox{\lower0.75cm
+		\vbox to 1.7cm{\vfil
+			\hbox to 1.7cm{\hfil\parbox{1.4cm}{#1\\#2}\hfil}
+			\vfil}%
+	}%
+}
+%% End confusion matrix commands
+
+%\newcommand*\revealcline{\noalign{\vskip\arrayrulewidth}}
+%\newcommand*\nextrow[1]
+%{\\\cline{#1}\noalign{\vskip1ex}\cline{#1}\revealcline}
+%\newcount\ccellA
+%\newcommand*\ccell[2]
+%{%
+%	\def\tmpa{}%
+%	\ccellA=1
+%	\loop
+%	\edef\tmpa{\unexpanded\expandafter{\tmpa\cellcolor{ccellcolor}}}%
+%	\fi
+%	\ifnum#2>\ccellA
+%	\edef\tmpa{\unexpanded\expandafter{\tmpa&}}%
+%	\repeat
+%	\tmpa
+%}
+
+
+% Define the default classification marking to go on frames that do not have an explicit classification
+\classification{\U}
+
+% The title slide contents are defined here, so we use ``maketitle'' as with a conventional slide. 
+% If titleclassification is not explicitly defined, then the ''maximum'' classification found is placed on the title slide.
+\titleclassification{\O}
+\author{Simon Hosking and Melissa Stolar}
+
+	\title{Team performance metrics}
+\subtitle{Communication dynamics as a predictor of team state}
+%\logo{}
+\institute{Human Factors\\
+	Aerospace Division}
+
+\begin{document}
+
+
+% For presentations without explicit release conditions just use make title
+\maketitle
+
+% but for presentation with release - edit the following in an appropriate manner - and comment out \maketitle!
+%{
+%\usebackgroundtemplate{\includegraphics[width=\paperwidth,height=\paperheight]{DST_FrontPageBackground}}
+%\frame{
+	%\centering
+		%\LARGE{\textcolor{DSTOpresentationtitle}{\inserttitle}} \\[12pt]
+		%\normalsize{\textcolor{DSTOauthor}{\insertauthor}} \par
+		%\normalsize{\textcolor{DSTOdate}{\insertdate}} \par
+%
+%\begingroup
+%\setbeamercolor{block title}{bg=DSTOreleaseboxheaderBG,fg=DSTOreleaseboxheaderFG}%bg=background, fg= foreground
+%\setbeamercolor{block body}{bg=DSTOreleaseboxheaderBG,fg=DSTOreleaseboxheaderFG}%bg=background, fg= foreground
+%\begin{block}{\small Release Statement:}\tiny%
+	%Release statement goes here\\
+	%More release text goes here if required
+%\end{block}
+%\endgroup	
+%}
+%}
+%\begin{frame}
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=0.7\linewidth]{figures/systems}
+%	%\caption{}
+%	\label{fig:systems}
+%\end{figure}
+%\end{frame}
+
+\begin{frame}
+\begin{figure}
+	\includestandalone[scale = .9]{tikzFigs/system}%     without .tex extension
+	% or use \input{mytikz}
+	\caption{tizk version of systems}
+	\label{fig:tsystems}
+\end{figure}
+\end{frame}
+
+
+%\begin{frame}
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=0.7\linewidth]{figures/metrics}
+%	%\caption{}
+%	\label{fig:metrics}
+%\end{figure}
+%\end{frame}
+
+\begin{frame}
+\begin{figure}
+	\includestandalone[scale = .5]{tikzFigs/perfMetrics}%     without .tex extension
+	% or use \input{mytikz}
+	\caption{tizk version of metrics}
+	\label{fig:tmetrics}
+\end{figure}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Introduction}
+\begin{figure}[hb]
+	\begin{center}
+		\includegraphics[width=4cm]{figures/abm1.png}\hspace{.2cm}\includegraphics[width=4cm]{figures/debrief.png}\\
+		\vspace{.2cm}
+		\includegraphics[width=3cm]{figures/aim.png}
+	\end{center}
+	\label{fig:setup} 
+\end{figure}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Scenario and objectives}
+\begin{itemize}[label=$\bullet$]
+	\item Tactical command and control team
+	\item 24 waves of 6-8 aircraft; wave initiated every 60s. 
+	\item Each wave contains one HOSTILE aircraft only. 
+	\item Team responsible for:
+	\begin{itemize}[label=$\bullet$]
+		\item Monitoring all traffic through the airspace.
+	    \item Communicating mission-related information with other team members via push-to-talk microphones. 
+		\item Identifying and engaging HOSTILE aircraft using provided ROE.
+	\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Surveillance Operator (SO)}
+\small
+\begin{columns}
+\column{0.5\textwidth}
+\begin{itemize}[label=$\bullet$]
+	\item Could see aircraft in entire airspace
+	\item Had access to point of origin and route information
+	\item Responsible for: 
+	\begin{itemize} [label=$\bullet$]
+		\item Identifying aircraft not on approved routes
+		\item Declaring SUSPECT aircraft
+		\item Reporting SUSPECT aircraft to TD
+		\item Maintaining awareness  of SUSPECT aircraft
+	\end{itemize}
+\end{itemize}
+\column{0.5\textwidth}
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[trim=1cm 2.4cm 6cm .3cm,clip,width=5.0cm]{figures/screenShots/SO_HW20s.eps}
+	\end{center}
+\end{figure}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Tactical Director (TD)}
+\small
+\begin{columns}
+\column{0.5\textwidth}
+\begin{itemize}[label=$\bullet$]
+	\item Could see aircraft in controlled airspace
+	\item Had access to speed and altitude information
+	\item Responsible for:
+	\begin{itemize}[label=$\bullet$]
+		\item Interrogating aircraft to determine speed and altitude
+		\item Prioritising threat level of SUSPECT aircraft
+		\item Directing FC to intercept aircraft on basis of priorities
+	\end{itemize} 
+\end{itemize}
+\column{0.5\textwidth}
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[trim=1cm 2.4cm 6cm .3cm,clip,width=5.0cm]{figures/screenShots/TD_HW_inside45s.eps}\\
+	\end{center}
+\end{figure}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Fighter Controller (FC)}
+\small
+\begin{columns}
+\column{0.5\textwidth}
+\begin{itemize}[label=$\bullet$]
+	\item Could see aircraft in smaller radius
+	\item Required directions from TD to locate and intercept SUSPECT aircraft
+	\item Had access to IFF and manoeuvre information
+	\item Responsible for:
+	\begin{itemize}[label=$\bullet$]
+		\item Moving fighters to intercept aircraft according to TDs priorities
+		\item Interrogating aircraft to determine IFF and Manoeuvre
+		\item Engaging hostile aircraft. 
+	\end{itemize}
+\end{itemize}
+\column{0.5\textwidth}
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[trim=1cm 2.4cm 6cm .3cm,clip,width=5.0cm]{figures/screenShots/FC_HW_inview.eps}\\
+	\end{center}
+\end{figure}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Rules of Engagement}
+\begin{itemize}	
+	\item SUSPECT DECLARATION
+	\begin{itemize}[label=$\bullet$]
+		\item Inside controlled airspace, and 
+		\item Inbound to the base on an unapproved route. 
+	\end{itemize}
+	\item HOSTILE DECLARATION	
+	\begin{itemize}[label=$\bullet$]
+		\item SUSPECT declaration, plus \ldots
+		\item Speed $>50$
+		\item Altitude $>50$
+		\item Friendly IFF $= 0$ ("lack of friendly")
+		\item Manoeuvre $= 1$ ("evasive")
+	\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{figure}
+	\includestandalone[width=\textwidth]{tikzFigs/decisionTree}%     without .tex extension
+	% or use \input{mytikz}
+	\caption{tizk version of decision tree}
+	\label{fig:tsystems}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Method}
+\begin{columns}
+	\column{0.5\textwidth}
+	\begin{itemize}[label=$\bullet$]
+		\item 10 teams of 3 participants randomly allocated to TD, SO, or FC. 
+		\item 3 sessions per week for 4 weeks
+		\item One level of workload per session with one repetition
+	\end{itemize}
+	\column{0.5\textwidth}
+	\begin{itemize}[label=$\bullet$]
+		\item 3 workload conditions:
+		\begin{itemize}[label = $\bullet$]
+			\item Low (6 aircraft)
+			\item Medium (7 aircraft)
+			\item High (8 aircraft)
+		\end{itemize}
+
+	\end{itemize}
+\end{columns}
+\end{frame}
+
+%\begin{frame}
+%\begin{figure}[h]
+%	\begin{center}
+%		\includegraphics[trim=1cm 2.4cm 6cm .3cm,clip,width=3.0cm]{figures/screenShots/SO_HW20s.eps}\hspace{.2cm}
+%		\includegraphics[trim=1cm 2.4cm 6cm .3cm,clip,width=3.0cm]{figures/screenShots/TD_HW_inside45s.eps}\\
+%		\vspace{.2cm}
+%		\hspace{.07cm}\includegraphics[trim=1cm 2.4cm 6cm .3cm,clip,width=3.0cm]{figures/screenShots/FC_HW45.eps}\hspace{.2cm}
+%		\includegraphics[trim=1cm 2.4cm 6cm .3cm,clip,width=3.0cm]{figures/screenShots/FC_HW_inview.eps}
+%		\vspace{.3cm}
+%		\caption{}
+%	\end{center}
+%\end{figure}
+%
+%\end{frame}
+
+%\begin{frame}
+%\begin{figure}[hb]
+%\begin{center}
+%	%	\framebox[0.60\textwidth]{%
+%	%		\input{setup.tex}
+%	%	}
+%	\includegraphics[scale = .5]{setup.eps}
+%\end{center}
+%\label{fig:setup} 
+%\end{figure}
+%\tiny{Hosking, S.G., Best, C.J., Jia, D., Ross, P., \& Watkinson, P. (2018). Validating team communication data using a transmission-duration threshold and voice activity detection algorithm. \emph{Behavior Research Methods, 51}, 384-397.}
+%\end{frame}
+
+%\begin{frame}
+%\begin{figure}
+%	\includestandalone[scale = .5]{tikzFigs/setup}%     without .tex extension
+%	% or use \input{mytikz}
+%	\caption{tizk setup}
+%	\label{fig:tsetup}
+%\end{figure}
+%\end{frame}
+
+%\begin{frame}
+%\begin{figure}
+%	\includestandalone[scale = .5]{tikzFigs/setup}%     without .tex extension
+%	% or use \input{mytikz}
+%	\caption{tizk setup}
+%	\label{fig:tsetup}
+%\end{figure}
+%\end{frame}
+
+\begin{frame}
+\begin{columns}
+	\column{0.4\textwidth}
+\begin{figure}
+	\includegraphics[scale = .5]{tikzFigs/images/setup.png}%     without .tex extension
+	% or use \input{mytikz}
+	%\caption{tizk setup}
+	\label{fig:tsetup}
+\end{figure}
+\column{0.6\textwidth}
+\begin{itemize}[label=$\bullet$]
+	\item DIS-to-audio 
+	\item Discretise utterances
+	\item Noise filter - transmission duration threshold and VAD (Hosking et al., 2018)
+	\item Data transformed to ordered and nominal communication sequences
+\end{itemize}
+\end{columns}
+\vspace{2cm}
+\footnotesize{Hosking, S.G., Best, C.J., Jia, D., Ross, P., \& Watkinson, P. (2018). Validating team communication data using a transmission-duration threshold and voice activity detection algorithm. \emph{Behavior Research Methods, 51}, 384-397.}
+\end{frame}
+
+\begin{frame}
+\frametitle{}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.6\linewidth]{figures/fourState.pdf}
+	\label{fig:4state}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{RQA outputs} 
+\begin{itemize}[label=$\bullet$]
+	\item \%REC: the percentage of recurrent points out of all possible points in the RP. 
+	\item \%DET: the predictability, or the patterned structure of recurrence of the system under study (\emph{determinism}) -- differentiates time series that may appear complex or irregular yet possess predictable structure from those that are truly random or stochastic processes
+	\item MAXLINE: the longest repeated string of data points in the time series -- indicative of \emph{stability} because more stable system dynamics are less likely to be interrupted by a perturbation.
+	\item ENTROPY: Shannon information entropy of a histogram of diagonal line lengths --  a measure of the complexity of the time series.
+\end{itemize}
+\end{frame}
+
+%\begin{frame}
+%\begin{figure}
+%	\vspace{-4cm}
+%	\includestandalone[scale = .5]{tikzFigs/comp}%     without .tex extension
+%	% or use \input{mytikz}
+%	\caption{tizk comp}
+%	\label{fig:tsetup}
+%\end{figure}
+%\end{frame}
+
+%\begin{frame}
+%\animategraphics[width=\textwidth]{12}{figures/gif/frame-}{0}{36}
+%\end{frame}
+
+%% Basic rectangles
+%\begin{frame}
+%\begin{figure}
+%	\includestandalone[width=6cm]{tikzFigs/basicRectangles}%     without .tex extension
+%	% or use \input{mytikz}
+%	\caption{Basic rectangles}
+%	\label{fig:basicRectanges}
+%\end{figure}
+%\end{frame}
+
+
+%neural network
+%\begin{frame}
+%\begin{figure}
+%	\includestandalone[width=6cm]{tikzFigs/neuralNetwork}%     without .tex extension
+%	% or use \input{mytikz}
+%	\caption{Neural network}
+%	\label{fig:neuralNetwork}
+%\end{figure}
+%\end{frame}
+
+
+%% n x n confusion matrix
+%\begin{frame}
+%\begin{figure}
+%	\includestandalone[width=6cm]{tikzFigs/nXnConfusionMatrix}%     without .tex extension
+%	% or use \input{mytikz}
+%	\caption{n * n confusion matrix}
+%	\label{fig:nXnConfusionMatrix}
+%\end{figure}
+%\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.6\linewidth]{figures/RP.eps}
+	\label{fig:RP}
+\end{figure}
+\end{frame}
+
+%% computers
+%\begin{frame}
+%\begin{figure}
+%	\includestandalone[width=6cm]{tikzFigs/computers}%     without .tex extension
+%	% or use \input{mytikz}
+%	\caption{Computers}
+%	\label{fig:computers}
+%\end{figure}
+%\end{frame}
+
+
+
+\begin{frame}
+\frametitle{}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.6\linewidth]{figures/detXweekXhitClass.eps}
+	\label{fig:dweekHitclass}
+\end{figure}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{}
+\begin{figure}
+\centering
+\includegraphics[width=0.6\linewidth]{figures/detXworkloadXhitClass.eps}
+\label{fig:dworkloadHitclass}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\begin{figure}
+	\includestandalone[scale = .5]{tikzFigs/window}%     without .tex extension
+	% or use \input{mytikz}
+	%\caption{tizk version of metrics}
+	\label{fig:tmetrics}
+\end{figure}
+\end{frame}
+
+
+%
+%\begin{frame}
+%%\begin{figure}
+%%	\only<1>{\includestandalone[scale=.5]{tikzFigs/window}}%
+%%	\only<2>{\includestandalone[scale=.5]{tikzFigs/window}}%
+%%	\only<3>{\includestandalone[scale=.5]{tikzFigs/window}}%
+%%\end{figure}
+%
+%\tikzset{
+%	invisible/.style={opacity=0},
+%	visible on/.style={alt={#1{}{invisible}}},
+%	alt/.code args={<#1>#2#3}{%
+%		\alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}} % \pgfkeysalso doesn't change the path
+%	},
+%}
+%
+%\begin{tikzpicture}
+%%    \node[anchor=south west,inner sep=0] at (0,0) {\includegraphics[width=\textwidth]{/home/simon/Documents/work/training/learningExperiment/manuscript/Presentation/tikzFigs/images/fourState.pdf}};
+%%    \draw[red,ultra thick,rounded corners] (7.5,5.3) rectangle (9.4,6.2);
+%
+%\node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[width=0.5\textwidth]{/home/simon/Documents/work/training/learningExperiment/manuscript/Presentation/tikzFigs/images/fourState.pdf}};
+%\begin{scope}[x={(image.south east)},y={(image.north west)}]
+%\draw[red,ultra thick,rounded corners, visible on=<1->] (0.175,0.2) rectangle (0.4,0.97);
+%\draw[red,ultra thick,rounded corners, visible on=<2->] (0.275,0.2) rectangle (0.5,0.97);
+%\draw[red,ultra thick,rounded corners, visible on=<3->] (0.375,0.2) rectangle (0.6,0.97);
+%%\only<4->\draw[red,ultra thick,rounded corners] (0.475,0.2) rectangle (0.7,0.97);
+%%\only<5->\draw[red,ultra thick,rounded corners] (0.575,0.2) rectangle (0.8,0.97);
+%%\only<6->\draw[red,ultra thick,rounded corners] (0.675,0.2) rectangle (0.9,0.97);
+%% \draw[help lines,xstep=.1,ystep=.1] (0,0) grid (1,1);
+%%\foreach \x in {0,1,...,9} { \node [anchor=north] at (\x/10,0) {0.\x}; }
+%%\foreach \y in {0,1,...,9} { \node [anchor=east] at (0,\y/10) {0.\y}; }
+%\end{scope}
+%\end{tikzpicture}
+%\end{frame}
+
+% AMIMATION
+%\begin{frame}[t,fragile]{Protein}
+%\animatevalue<2-22>{\myangle}{0}{20}
+%\begin{figure}
+%	\includestandalone[scale = .5]{tikzFigs/animate}%     without .tex extension
+%	% or use \input{mytikz}
+%	\caption{tizk version of metrics}
+%	\label{fig:tmetrics}
+%\end{figure}
+%\end{frame}
+
+%\def\r{3}
+%\def\s{0}
+%
+%\begin{frame}<1-10>
+%\pgfmathsetmacro{\r}{2 + \r}
+%\pgfmathsetmacro{\s}{.1 + \s}
+%\global\let\r=\r
+%\global\let\s=\s
+%\begin{tikzpicture}[every node/.style={fill=green!50!white}]
+%
+%\onslide<1->\node (b) at (-1,0) [ rectangle]  {R};
+%\onslide<2->\node (r) at  (1.4,0) [circle, minimum size=\r pt,xshift=-5mm] {S};
+%\onslide<3->\node (d) at (2.5,-2) [circle,xshift=-5mm] {PRD};
+%\onslide<3->\draw [->] (b.east) -- ($(b.east)!\s!(d.west)$);
+%\onslide<4->\node (c) at (2.5,2) [circle, xshift=-5mm] {PSD};
+%\onslide<4->\draw [->] (b.east) -- ($(b.east)!\s!(c.west)$);
+%
+%\end{tikzpicture}
+%\end{frame}
+
+% K-fold
+\begin{frame}
+\begin{itemize}[label=$\bullet$]
+	\item Shuffle the dataset randomly.
+	\item Split the dataset into k subsets
+	\begin{itemize}[label=$\bullet$]
+		\item Use one of the k-subsets as test data set
+		\item Use the remainder of the k-subsets as training data set
+		\item Fit a model on the training set and evaluate it on the test set
+		\item Evaluate model performance score
+	\end{itemize}
+    \item Repeat k times
+	\item Determine average model performance using the sample of model evaluation scores ($\sum E_k/k$)
+\end{itemize}
+\end{frame}
+
+%\begin{frame}
+%\begin{figure}
+%\includestandalone[width=6cm]{tikzFigs/kFold}%     without .tex extension
+%% or use \input{mytikz}
+%\caption{k - Fold}
+%\label{fig:kFold}
+%\end{figure}
+%\end{frame}
+
+
+\begin{frame}
+\begin{figure}
+\includestandalone[width=9cm]{tikzFigs/3-folds}%     without .tex extension
+% or use \input{mytikz}
+\caption{k-fold cross-validation}
+\label{fig:kfolds}
+\end{figure}
+\end{frame}
+
+
+%\begin{frame}
+%\definecolor{ccellcolor}{HTML}{d09000}
+%\begin{tabular}[c]{l *5{|p{2em}}|}
+%	& \multicolumn{5}{c|}{$\longleftarrow$ Total Number of Dataset $\longrightarrow$}\\
+%	\cline{2-6}\revealcline
+%	$1^{st}$ iteration & \ccell{1}{5}
+%	\nextrow{2-6}
+%	$2^{nd}$ iteration & \ccell{2}{5}
+%	\nextrow{2-6}
+%	$3^{rd}$ iteration & \ccell{3}{5}
+%	\nextrow{2-6}
+%	Experiment 4 & \ccell{4}{5}
+%	\nextrow{2-6}
+%	Experiment 5 & \ccell{5}{5}\\
+%	\cline{2-6}
+%\end{tabular}\hskip1em
+%\begin{tabular}[c]{|p{2em}|l}
+%	\cline{1-1}
+%	\ccell{0}{1}  & Training
+%	\nextrow{1-1}
+%	\ccell{1}{1}  & Validation\\
+%	\cline{1-1}
+%\end{tabular}
+%\end{frame}
+
+
+\begin{frame}
+\begin{figure}
+	\includestandalone[width=8cm]{tikzFigs/singleChannelNetwork}%     without .tex extension
+	% or use \input{mytikz}
+	\caption{Single channel LSTM sequence classifier}
+	\label{fig:single_channel}
+\end{figure}
+\end{frame}
+
+
+\begin{frame}
+\begin{figure}
+	\includestandalone[width=8cm]{tikzFigs/featureFusionNetwork}%     without .tex extension
+	% or use \input{mytikz}
+	\caption{Single channel LSTM used for multivariate sequence classification}
+	\label{fig:featureFusion}
+\end{figure}
+\end{frame}
+
+
+\begin{frame}
+\begin{figure}
+	\includestandalone[width=8cm]{tikzFigs/weightedMultiChannel}%     without .tex extension
+	% or use \input{mytikz}
+	\caption{Weighted multichannel LSTM sequence classifier}
+	\label{fig:weighted_channel}
+\end{figure}
+\end{frame}
+
+
+\begin{frame}
+%\frametitle{}
+\begin{center}
+	\noindent
+	\renewcommand\arraystretch{1.5}
+	\setlength\tabcolsep{0pt}
+	
+	\begin{tabular}{c >{\bfseries}r @{\hspace{0.7em}}c @{\hspace{0.4em}}c @{\hspace{0.7em}}l}
+		\multirow{10}{*}{\rotatebox{90}{\parbox{1.1cm}{\bfseries\centering Actual\\  }}} & 
+		& \multicolumn{2}{c}{\bfseries Predicted} & \\
+		& & \bfseries Error & \bfseries No error & \bfseries  \\
+		& Error & \MyBox{True}{Positive} & \MyBox{False}{Negative} & $ \sum P$\\[2.4em]
+		& No error & \MyBox{False}{Positive} & \MyBox{True}{Negative} & $ \sum N$ \\
+		&  & $\sum p$ & $ \sum n$ &
+	\end{tabular}
+\end{center}
+\end{frame}
+
+
+%\begin{frame}
+%\frametitle{}
+%\begin{center}
+%\begin{tabular}{@{}cc cc@{}}
+%	\multicolumn{1}{c}{} &\multicolumn{1}{c}{} &\multicolumn{2}{c}{Predicted} \\ 
+%	\cmidrule(lr){3-4}
+%	\multicolumn{1}{c}{} & 
+%	\multicolumn{1}{c}{} & 
+%	\multicolumn{1}{c}{Yes} & 
+%	\multicolumn{1}{c}{No} \\ 
+%	\cline{2-4}
+%	\multirow[c]{2}{*}{\rotatebox[origin=tr]{90}{Actual}}
+%	& Yes  & 100 & 0   \\[1.5ex]
+%	& No  & 10   & 80 \\ 
+%	\cline{2-4}
+%\end{tabular}
+%\end{center}
+%\end{frame}
+
+\end{document}
